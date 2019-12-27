@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.http import Http404
 from .models import Post, Comment
 from datetime import datetime
-# from .forms import CommentForm
+from .forms import CommentForm
 
 
 # Create your views here.
@@ -24,7 +24,7 @@ def post_detail(request, pk):
     post = get_object_or_404(Post, pk=pk)
     c_number = len(Comment.objects.filter(post_id=pk))
 
-    return render(request, '/blog/post_detail.html', {'post': post, 'c_number': c_number})
+    return render(request, 'blog/post_detail.html', {'post': post, 'c_number': c_number})
 
 def post_comment(request, pk):
     comments = Comment.objects.filter(post_id=pk)
@@ -34,7 +34,7 @@ def post_comment(request, pk):
 
 def add_comment(request, pk):
     if request.method == "POST":
-        form = CommentForm(request.Post)
+        form = CommentForm(request.POST)
 
         if form.is_valid():
             comment = form.save(commit=False)
@@ -42,6 +42,7 @@ def add_comment(request, pk):
             comment.post_id = pk
             comment.save()
             return redirect('post_detail', pk = pk)
-        else:
-            form = CommentForm()
-            return render(request, 'blog/add_comment.html', {'form': form})
+    else:
+        form = CommentForm()
+
+    return render(request, 'blog/add_comment.html', {'form': form})
